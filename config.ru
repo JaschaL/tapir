@@ -1,0 +1,3 @@
+require "./monstas"
+
+run App
