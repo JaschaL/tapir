@@ -1,6 +1,6 @@
 # tAPIr
 
-A user friendly interface/wrapper  enabling idiots like myself to usefully interact with the ZSNL API.
+A user friendly interface/wrapper enabling idiots like myself to usefully interact with the ZSNL API.
 
 ## Getting Started
 
@@ -19,6 +19,7 @@ ERB
 csv
 json
 HTTPARTY
+Typhoeus
 
 ```
 
@@ -44,7 +45,7 @@ OK there will be tests just not rite nao.
 
 ### And coding style tests
 
-Explain what these tests test and why
+Explain what these fictional, futuristic tests test (tests test tests? test!) and why
 
 ```
 Give an example
@@ -52,7 +53,7 @@ Give an example
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+Add additional notes about how to deploy this on a live system, aKa: NEVER
 
 ## Built With
 
