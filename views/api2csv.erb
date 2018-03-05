@@ -11,7 +11,7 @@
 </div>
 <% end %>
 
-<form method="POST" action="/csv2api" enctype="multipart/form-data">
+<form method="POST" action="/api2csv" enctype="multipart/form-data">
 
 	<h2>API2CSV</h2>
 	<p>Please enter the necessary variables below. Tapir will take care of the rest, honey.</p>
@@ -39,41 +39,28 @@
   		</div> 
 	</div>
 
-	<div class="p-3 mb-2 rounded bg-light">
-	  	<h4>Target</h4>
-	  	<p>These variables are necessary to connect to the api we want to post to so we may get the data in.</p>
-
-		<div class="form-group row">
-		  <label for="Endpoint_URL2" class="col-sm-3 col-form-label">Endpoint URL</label>	
-		  <input type="url" name="Endpoint_URL2" class="form-control col-sm-4" id="name" aria-describedby="nameHelp" placeholder="https://omgeving2.zaaksysteem.nl">
-		  <small id="nameHelp" class="form-text text-muted col-form-label col-sm-4">URL goes here.</small>
-  		</div> 
-
-  		<div class="form-group row">
-		  <label for="API_Interface_ID_Target" class="col-sm-3 col-form-label">API Interface ID</label>
-		  <input type="text" name="API_Interface_ID_Target" class="form-control col-sm-4" id="name" aria-describedby="nameHelp" placeholder="Default input">
-		  <small id="nameHelp" class="form-text text-muted col-form-label col-sm-4">Koppelvak id nummer.</small>
-  		</div> 
-
-		<div class="form-group row">
-		  <label for="API_KEY_Target" class="col-sm-3 col-form-label">API Key</label>	
-		  <input type="password" name="API_KEY_Target" class="form-control col-sm-4" id="name" aria-describedby="nameHelp" placeholder="Datsecretsauce">
-		  <small id="nameHelp" class="form-text text-muted col-form-label col-sm-4">Superdupersecret key goes here.</small>
-  		</div>   		
-		
-		<div class="form-group row">
-		  <label for="requestor_id" class="col-sm-3 col-form-label">Requestor</label>	
-		  <input type="text" name="requestor_id" class="form-control col-sm-4" id="name" aria-describedby="nameHelp" placeholder="123456789">
-		  <small id="nameHelp" class="form-text text-muted col-form-label col-sm-4">BSN</small>
-  		</div> 
-
-		<div class="form-group row">
-		  <label for="casetype_id" class="col-sm-3 col-form-label">casetype_id</label>	
-		  <input type="text" name="casetype_id" class="form-control col-sm-4" id="name" aria-describedby="nameHelp" placeholder="UUID">
-		  <small id="nameHelp" class="form-text text-muted col-form-label col-sm-4">Casetype UUID. Find in catalogue.</small>
-  		</div> 
-
-
   		<button type="submit" class="btn btn-primary float-right">Submit</button>
 	</div>
 </form>
+
+<% unless @casetype_list.nil? %>
+	<div class="p-3 mb-2 rounded bg-light">
+		<h4>Search Result:</h4>
+		<table class="table table-striped">
+		  <thead>
+		    <tr>
+		      <th scope="col">Zaaktype</th>
+		      <th scope="col">UUID</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		<% @casetype_list.each do |key , value| %>    
+		    <tr>
+		      <th scope="row"><%= key %></th>
+		      <td><%= value %></td>
+		    </tr>
+		<% end %>    
+		  </tbody>
+		</table>
+	</div>
+<% end %>    
