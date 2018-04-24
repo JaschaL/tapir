@@ -1,31 +1,38 @@
 
 require 'csv'
 require 'json'
-# require 'HTTParty'
 require 'typhoeus'
 require 'logger'
 
 # global app variables
 @status_message = ""
+
 # end global app variables
 
-
-
-
-log = Logger.new('log.txt')
-log.debug "Log file created"
-
-
+def assert_response(response)
+          if response.success?
+            return JSON.parse(response.body)
+          elsif response.timed_out?
+            @log.error "got a time out"
+          elsif response.code == 0
+            @log.error response.return_message
+          else
+            @log.error "HTTP request failed: " + response.code.to_s
+          end
+end
 
 class Docs2apiController < Sinatra::Base
   post "/docs2api" do
+    @log = Logger.new('log.txt')
+    @log.debug "Log file created"
+
+    # first we set a few global variables that will be the same for each API call
     tempfile = params['CSV_FILE'][:tempfile]
     @filename = params['CSV_FILE'][:filename]
     File.open("public/files/testdump/#{@filename}", "r+") do |f|
       f.write(tempfile.read)
     end
 
-    # first we set a few global variables that will be the same for each API call
     # filename = params[:CSV_FILE]
     casetype_id = params[:casetype_id]
     API_Interface_ID = params[:API_Interface_ID_Target]
@@ -56,14 +63,14 @@ class Docs2apiController < Sinatra::Base
 
       # Now we need to prepare_file all the files + save them sexy file id's     
       Dir.chdir "public/files/testdump/#{Dossier_Path}" do
-        
+      @log.info "Dossier path: #{Dossier_Path}"
+
         # dit is een method
         filecode_array = Array.new
         Dir.glob("*.pdf") {|filenamer|
             # this should be a generic method for file prep, where we define the body before we run the method
             responsb = Typhoeus.post(
             "#{Endpoint_URL2}/api/v1/case/prepare_file/",
-            #method: :post,
             verbose: true,
             body: {
               upload: File.open(filenamer)
@@ -71,31 +78,22 @@ class Docs2apiController < Sinatra::Base
             headers: { 'Content-Type' => "multipart/form-data", "API-key" => "#{API_KEY}", "API-Interface-ID" => "#{API_Interface_ID}" }
             ) 
 
+            response_data = assert_response(responsb)
+            @log.info response_data #["status_code"]
+          
           bla = JSON.parse(responsb.body)
-          
-          # puts bla['result']['instance']['references'].keys
           filecode_array << bla['result']['instance']['references'].keys[0]
-          
-          # puts filecode_array
 
           # dit is een method
           values = Hash.new
           values[:bto_clientnummer] = csvvalues[:clientnummer]
           values[:ztc_brondocument] = filecode_array
-          # puts "=====Values:====="
-          # puts values
-          # puts csvvalues[:clientnummer]
-          # puts values[:bto_clientnummer]
-          # puts "================="
 
-          # bloop = values[:bto_clientnummer]
           requestor = Hash.new
           requestor[:id] = csvvalues[:clientnummer]
           requestor[:type] = "person"
 
-          puts requestor
-
-          #this prerequest stuff should be a method that works with params, probably?
+          # this prerequest stuff should be a method that works with params, probably?
           pre_request_body = {}
           pre_request_body[:casetype_id] = casetype_id
           pre_request_body[:requestor] = requestor
@@ -111,32 +109,18 @@ class Docs2apiController < Sinatra::Base
           # this should be a generic method for case creation, where we define the body before we run the method
           responsc = Typhoeus.post(
           "#{Endpoint_URL2}/api/v1/case/create/",
-          #method: :post,
           verbose: true,
           body: request_body,
           headers: { 'Content-Type' => "application/json", "API-key" => "#{API_KEY}", "API-Interface-ID" => "#{API_Interface_ID}" }
           ) 
 
-
-          # bla = JSON.parse(responsc)
-          puts "==== RESPONSE HERE: ===="
-          # puts bla
-          puts responsc.code
-          puts responsc.headers
-          puts "========================"
-
-          # responsb = HTTParty.post(
-          # "#{Endpoint_URL2}/api/v1/case/create/",
-          # :body => request_body,
-          # :debug_output => $stdout,
-          # :headers => { 'Content-Type' => 'application/json', "API-key" => "#{API_KEY}", "API-Interface-ID" => "#{API_Interface_ID}" }
-          # )
+          @log.info  "New post: #{responsc.body[instance][number]} #{responsc.body[instance][number_master]} " 
+          response_data = assert_response(responsb)
+          @log.info response_data #["status_code"]
       }
           
 
       end
-      # @status_message = "Tapir says: #{responsa['status_code']} - #{responsa['result']['instance']['message']}"
-      # puts "Tapir says: #{response.code} - #{response.body}"
     end
     erb :docs2api
   end
