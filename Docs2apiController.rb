@@ -67,6 +67,7 @@ class Docs2apiController < Sinatra::Base
 
         # dit is een method
         filecode_array = Array.new
+        
         Dir.glob("*.pdf") {|filenamer|
             # this should be a generic method for file prep, where we define the body before we run the method
             responsb = Typhoeus.post(
@@ -83,14 +84,15 @@ class Docs2apiController < Sinatra::Base
           
           bla = JSON.parse(responsb.body)
           filecode_array << bla['result']['instance']['references'].keys[0]
-
+          }
+          
           # dit is een method
           values = Hash.new
           values[:bto_clientnummer] = csvvalues[:clientnummer]
           values[:ztc_brondocument] = filecode_array
 
           requestor = Hash.new
-          requestor[:id] = csvvalues[:clientnummer]
+          requestor[:id] = csvvalues[:bsnummer]
           requestor[:type] = "person"
 
           # this prerequest stuff should be a method that works with params, probably?
@@ -114,11 +116,10 @@ class Docs2apiController < Sinatra::Base
           headers: { 'Content-Type' => "application/json", "API-key" => "#{API_KEY}", "API-Interface-ID" => "#{API_Interface_ID}" }
           ) 
 
-          @log.info  "New post: #{responsc.body[instance][number]} #{responsc.body[instance][number_master]} " 
-          response_data = assert_response(responsb)
+          # @log.info  "New post: #{responsc.body[instance][number]} #{responsc.body[instance][number_master]} " 
+          response_data = assert_response(responsc)
           @log.info response_data #["status_code"]
-      }
-          
+        
 
       end
     end
