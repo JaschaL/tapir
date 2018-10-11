@@ -5,7 +5,8 @@ require "./Api2apiController"
 require "./Csv2apiController"
 require "./Docs2apiController"
 require "./Api2csvController"
-
+require "./Subjects2apiController"
+require "./FoldercheckerController"
 
 # global app variables
 @status_message = ""
@@ -16,6 +17,8 @@ class App < Sinatra::Base
   use Api2csvController
   use Csv2apiController
   use Docs2apiController
+  use Subjects2apiController
+  use FoldercheckerController
 
   get "/" do
     erb :index
@@ -45,6 +48,14 @@ class App < Sinatra::Base
   get "/docs2api" do
     erb :docs2api
   end
+
+  get "/subjects2api" do
+    erb :subjects2api
+  end  
+
+  get "/folderchecker" do
+    erb :folderchecker
+  end  
 
 end
 
