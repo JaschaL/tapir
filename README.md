@@ -75,7 +75,7 @@ N/A
 
 ## License
 
-NONE. 
+EUPL 1.2 (see license folder)
 
 ## Acknowledgments
 
